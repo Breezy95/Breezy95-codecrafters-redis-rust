@@ -8,7 +8,7 @@ fn main() {
     
     fn conn_handler(stream: TcpStream) {
         let mut buf = [0;10]; 
-        let len = stream.peek().expect("peek op failed");
+        let len = stream.peek(&mut buf).expect("peek op failed");
         println!("value of the length of message is {}", len);
     }
 
