@@ -1,6 +1,7 @@
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
  use std::str;
+ use std::io::BufReader;
 
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -8,9 +9,11 @@ fn main() {
 
     
     fn conn_handler(stream: TcpStream) {
-        let mut buf = [0;4]; 
-        stream.read(&mut buf);
         
+        
+        let mut buf = [0;512]; 
+        let res =stream.peek(&mut buf).unwrap();
+        println!("{}",res);
         let s = match str::from_utf8(&buf) {
             Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
