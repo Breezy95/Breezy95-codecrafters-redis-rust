@@ -11,7 +11,7 @@ fn main() {
         let mut buf = [0;4]; 
         stream.read(&mut buf);
         
-        let s = match str::from_utf8(buf) {
+        let s = match str::from_utf8(&buf) {
             Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
     };
