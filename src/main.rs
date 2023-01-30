@@ -13,7 +13,7 @@ fn main() {
         
         let mut buf = [0;512]; 
         let res =stream.peek(&mut buf).unwrap();
-        println!("{}",res);
+        println!("res = {}",res);
         let s = match str::from_utf8(&buf) {
             Ok(v) => v,
         Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
