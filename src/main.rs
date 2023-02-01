@@ -23,10 +23,10 @@ fn main() {
 
         
 
-        let s = match str::from_utf8(&buf) {
-            Ok(v) => v,
-       Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-       };
+    //     let s = match str::from_utf8(&buf) {
+    //         Ok(v) => v,
+    //    Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+    //    };
 
        let simple_resp = b"+PONG\r\n";
        let bytes_written =stream.write(simple_resp);
