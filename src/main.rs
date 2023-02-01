@@ -15,8 +15,11 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream);
 
+        loop  {
         let res = reader.read(&mut buf).unwrap();
-        println!("Size of msg is {}", res);        
+        println!("Size of msg is {}", res);     
+        
+        
 
         
 
@@ -28,9 +31,9 @@ fn main() {
        let simple_resp = b"+PONG\r\n";
        let bytes_written =stream.write(simple_resp);
 
-       
+      }; 
 
-    println!("result: {}", s);
+    
        
     
 
