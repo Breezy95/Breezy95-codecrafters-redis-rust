@@ -2,6 +2,7 @@
  use std::net::{TcpListener,TcpStream};
  use std::str;
  use std::io::{BufReader,Read,Write};
+ use std::thread;
  
 
 fn main() {
@@ -44,9 +45,12 @@ fn main() {
     //
      for stream in listener.incoming() {
         match stream {
+            
              Ok( succ_stream) => {
                  println!("accepted new connection");
+                 thread::spawn(move || {
                  conn_handler( &succ_stream);
+                 });
              }
              Err(e) => {
                  println!("error: {}", e);
