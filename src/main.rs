@@ -19,8 +19,8 @@ fn main() {
                 break;
             }
             token.push(bytes_buff[i]);
-            let str_conv = std::str::from_utf8(term_slice).unwrap();
-            println!("term slice: {}",str_conv);
+            let str_conv = std::str::from_utf8(&token).unwrap();
+            println!("token: {}",str_conv);
         }
         return token;
     }
