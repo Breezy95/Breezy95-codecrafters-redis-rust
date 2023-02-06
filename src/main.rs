@@ -15,8 +15,8 @@ fn main() {
         let mut token: Vec<u8> = Vec::new();
         for i in 0 .. bytes_buff.len()-2{
             let term_slice = &bytes_buff[i..i+1];
-            //\r\n
-            if term_slice == b"\x72\x6E" {
+            //   \r\n
+            if term_slice == b"\x0D\x0A" {
                 break;
             }
             token.push(bytes_buff[i]);
