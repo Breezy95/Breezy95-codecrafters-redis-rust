@@ -20,7 +20,7 @@ fn main() {
             }
             token.push(bytes_buff[i]);
             let str_conv = std::str::from_utf8(term_slice).unwrap();
-            println!(str_conv);
+            println!("term slice: {}",str_conv);
         }
         return token;
     }
