@@ -14,15 +14,11 @@ fn main() {
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
         let mut token: Vec<u8> = Vec::new();
         for i in 0 .. bytes_buff.len()-2{
-            let term_slice = &bytes_buff[i..i+1];
-            //   \r\n
-            println!("term_slice: {:?}", term_slice);
-            if term_slice == [0x0D,0x0A] {
-                println!("condition received");
-                break;
+            let term_slice = &bytes_buff[i..i+2];
+            if [0x0D,0x0A] == term_slice {
+                break; 
             }
-            token.push(bytes_buff[i]);
-            
+            token.push(bytes_buff[i]);  
         }
         return token;
     }
@@ -42,7 +38,7 @@ fn main() {
        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
        };
 
-       let mut msg_bytes = buf.clone().to_vec();
+       let mut msg_bytes = buf.to_vec();
 
        let mut token = tokenizer(&mut msg_bytes);
 
