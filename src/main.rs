@@ -14,6 +14,7 @@ fn main() {
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
         let mut token: Vec<u8> = Vec::new();
 
+        token = bytes_buff.clone();
         return token;
     }
     
