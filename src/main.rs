@@ -16,14 +16,13 @@ fn main() {
         for i in 0 .. bytes_buff.len()-2{
             let term_slice = &bytes_buff[i..i+1];
             //   \r\n
-            //println!("term_slice: {}", );
+            println!("term_slice: {:?}", term_slice);
             if term_slice == b"\x0D\x0A" {
                 println!("condition received");
                 break;
             }
             token.push(bytes_buff[i]);
-            let str_conv = std::str::from_utf8(&token).unwrap();
-            println!("token: {}",str_conv);
+            
         }
         return token;
     }
