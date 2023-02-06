@@ -71,6 +71,7 @@ fn main() {
                 // thread::spawn(move || {
                  conn_handler( &mut succ_stream);
                 // });
+                break;
              }
              Err(e) => {
                  println!("error: {}", e);
