@@ -22,11 +22,13 @@ fn main() {
 
 
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
-        let token =  Vec::new();
+        let mut token =  Vec::new();
         for i in 0 .. bytes_buff.len()-2 {
             if bytes_buff[i] == 13 && bytes_buff[i+1] == 10 {
                 println!("wefewfwefwf");
+                break
             }
+            token.push(bytes_buff[i]);
         }
 
         return token;
