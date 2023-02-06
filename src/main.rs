@@ -44,7 +44,7 @@ fn main() {
 
 
        println!("message: {}",s);
-       println!("1st token: {}", token[0]);
+       println!("1st token: {}", token.len());
 
 
       }; 
