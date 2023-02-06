@@ -24,7 +24,7 @@ fn main() {
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
         let token = bytes_buff.clone();
         for i in 0 .. bytes_buff.len() {
-            println!("{}", bytes_buff[i].is_ascii_hexdigit());
+            println!("{}", bytes_buff[i].to_string());
         }
 
         return token;
