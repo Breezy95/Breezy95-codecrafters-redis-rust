@@ -16,7 +16,7 @@ fn main() {
         for i in 0 .. bytes_buff.len()-2{
             let term_slice = &bytes_buff[i..i+1];
             //   \r\n
-            println!("term_slice: {}", );
+            //println!("term_slice: {}", );
             if term_slice == b"\x0D\x0A" {
                 println!("condition received");
                 break;
