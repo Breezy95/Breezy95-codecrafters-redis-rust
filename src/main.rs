@@ -4,6 +4,16 @@
  use std::io::{BufReader,Read,Write};
  use std::thread;
  
+ enum Ops {
+    String,
+    Errors,
+    Integers,
+    BulkString,
+    Arrays
+
+ }
+
+ 
 
 
 fn main() {
@@ -12,9 +22,11 @@ fn main() {
 
 
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
-        let mut token: Vec<u8> = Vec::new();
+        let token = bytes_buff.clone();
+        for i in 0 .. bytes_buff.len() {
+            println!("{}", bytes_buff[i].is_ascii_hexdigit());
+        }
 
-        token = bytes_buff.clone();
         return token;
     }
     
