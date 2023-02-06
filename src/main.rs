@@ -13,17 +13,7 @@ fn main() {
 
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
         let mut token: Vec<u8> = Vec::new();
-        for i in 0 .. bytes_buff.len()-2{
-            let term_slice = &bytes_buff[i..i+2];
 
-            if [0x0D,0x0A] == term_slice {
-                println!("cond met");
-                break; 
-            }
-
-            token.push(bytes_buff[i]);  
-        }
-        
         return token;
     }
     
@@ -47,7 +37,7 @@ fn main() {
        let mut token = tokenizer(&mut msg_bytes);
 
        //println!("message: {}",s);
-       //println!("1st token: {}", token.len());
+       println!("1st token: {}", token.len());
 
 
       }; 
@@ -69,7 +59,7 @@ fn main() {
                  thread::spawn(move || {
                  conn_handler( &mut succ_stream);
                  });
-                break;
+                
              }
              Err(e) => {
                  println!("error: {}", e);
