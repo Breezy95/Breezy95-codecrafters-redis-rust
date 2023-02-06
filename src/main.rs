@@ -43,10 +43,9 @@ fn main() {
        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
        };
 
-       let mut msg_bytes =s.as_bytes().to_vec();
+       let mut msg_bytes = buf.clone().to_vec();
 
        let mut token = tokenizer(&mut msg_bytes);
-
 
        //println!("message: {}",s);
        //println!("1st token: {}", token.len());
