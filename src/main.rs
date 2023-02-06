@@ -17,6 +17,7 @@ fn main() {
             let term_slice = &bytes_buff[i..i+1];
             //   \r\n
             if term_slice == b"\x0D\x0A" {
+                println!("condition received");
                 break;
             }
             token.push(bytes_buff[i]);
