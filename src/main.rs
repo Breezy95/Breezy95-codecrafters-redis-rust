@@ -19,6 +19,7 @@ fn main() {
                 break;
             }
             token.push(bytes_buff[i]);
+            println!("{}",bytes_buff[i]);
         }
         return token;
     }
