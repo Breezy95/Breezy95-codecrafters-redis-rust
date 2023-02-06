@@ -19,7 +19,8 @@ fn main() {
                 break;
             }
             token.push(bytes_buff[i]);
-            println!("{}",bytes_buff[i]);
+            let str_conv = std::str::from_utf8(term_slice).unwrap();
+            println!(str_conv);
         }
         return token;
     }
