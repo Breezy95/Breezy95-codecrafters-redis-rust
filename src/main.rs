@@ -15,11 +15,15 @@ fn main() {
         let mut token: Vec<u8> = Vec::new();
         for i in 0 .. bytes_buff.len()-2{
             let term_slice = &bytes_buff[i..i+2];
+
             if [0x0D,0x0A] == term_slice {
+                println!("cond met");
                 break; 
             }
+
             token.push(bytes_buff[i]);  
         }
+        
         return token;
     }
     
@@ -62,9 +66,9 @@ fn main() {
             
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
-                // thread::spawn(move || {
+                 thread::spawn(move || {
                  conn_handler( &mut succ_stream);
-                // });
+                 });
                 break;
              }
              Err(e) => {
