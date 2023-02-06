@@ -1,7 +1,7 @@
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
  use std::{str, u8};
- use std::io::{BufReader,Read,Write};
+ use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  
  enum Ops {
@@ -22,16 +22,13 @@ fn main() {
 
 
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
-        let mut token =  Vec::new();
-        for i in 0 .. bytes_buff.len()-2 {
-            if bytes_buff[i] == 13 && bytes_buff[i+1] == 10 {
-                println!("wefewfwefwf");
-                break
-            }
-            token.push(bytes_buff[i]);
-        }
-
-        return token;
+        let mut tokens: Vec<u8> =  Vec::new();
+        let mut buffer_slice = &bytes_buff[..];
+        let mut reader = BufReader::new(buffer_slice);
+        let mut buf = vec![];
+        reader.read_until(b'\r', &mut buf);
+        tokens.clone_from(&buf);
+        return tokens; 
     }
     
     fn conn_handler( stream: &mut TcpStream) {
@@ -50,11 +47,15 @@ fn main() {
        };
 
        let mut msg_bytes = buf.to_vec();
+       
+       let mut cmd_stk: Vec<u8> = Vec::new();
 
-       let mut token = tokenizer(&mut msg_bytes);
+       let mut tokens = tokenizer(&mut msg_bytes);
+       
+
 
        //println!("message: {}",s);
-       println!("1st token: {}", token.len());
+       println!("1st token: {}", tokens.len());
 
 
       }; 
