@@ -17,7 +17,7 @@ fn main() {
             let term_slice = &bytes_buff[i..i+1];
             //   \r\n
             println!("term_slice: {:?}", term_slice);
-            if term_slice == b"\x0D\x0A" {
+            if term_slice == [0x0D,0x0A] {
                 println!("condition received");
                 break;
             }
