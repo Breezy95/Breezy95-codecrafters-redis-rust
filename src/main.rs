@@ -46,8 +46,8 @@ fn main() {
        let mut token = tokenizer(&mut msg_bytes);
 
 
-       println!("message: {}",s);
-       println!("1st token: {}", token.len());
+       //println!("message: {}",s);
+       //println!("1st token: {}", token.len());
 
 
       }; 
