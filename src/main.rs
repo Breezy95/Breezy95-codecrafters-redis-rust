@@ -51,25 +51,39 @@ fn main() {
        
        let tokens = tokenizer(&mut msg_bytes);
        let  (mut arrs,mut BStrs,mut Integers,mut Errors,mut SStrs) = (0,0,0,0,0);
-       let mut op_vec: Vec<String> = vec![];
+       let mut op_vec: Vec<String> = Vec::new();
+
+
        for token in tokens{
-        
+
         let mut iter =token.chars();
         let first_char = iter.nth(0);
 
         let subseq: String = iter.collect();
         println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
+
        match first_char.unwrap() {
         '+' => SStrs+=1,
         '-' => Errors+=1,
         ':' => Integers+=1,
-        '$' => BStrs +=1,
-        '*' =>  op_vec.push("_".to_string()),
+        '$' => {SStrs+=1},
+        '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
         //all chars
-        _ => {}
+        _ => {op_vec.push(token)}
        }
-
     }
+
+    let operation: &str =op_vec[0].as_ref();
+    let str_oper: String = operation.to_string();
+
+    if str_oper == "echo"{
+        println!("Reregefg")
+    }
+
+
+
+
+
        
 
        let ans =stream.write(b"+PONG\r\n");
