@@ -74,10 +74,15 @@ fn main() {
     }
 
     let operation: &str =op_vec[0].as_ref();
-    let str_oper: String = operation.to_string();
+    
 
-    if str_oper == "echo"{
-        println!("Reregefg")
+    
+    match operation {
+        "ping"  => {stream.write(b"+PONG\r\n")},
+
+        "echo" => {stream.write(op_vec[1].as_bytes())},
+        
+        _ => { Ok(1)}
     }
 
 
@@ -86,7 +91,7 @@ fn main() {
 
        
 
-       let ans =stream.write(b"+PONG\r\n");
+       ;
        
 
 
