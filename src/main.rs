@@ -1,6 +1,6 @@
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
- use std::{str, u8};
+ use std::{str, u8, vec};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  
@@ -18,7 +18,7 @@ fn main() {
         let mut tokens: Vec<String> =  Vec::new();
         
         let buffer_slice = &bytes_buff[..];
-        let mut reader = BufReader::new(buffer_slice);
+        let reader = BufReader::new(buffer_slice);
         //let mut buf: Vec<u8> = vec![];
         for line in reader.lines(){
             let elem = line.as_ref();
@@ -29,33 +29,48 @@ fn main() {
 
         return tokens; 
     }
+
+    
     
     fn conn_handler( stream: &mut TcpStream) {
         
         
         let mut buf = [0;512]; 
-        let mut reader = BufReader::new(stream);
+        let mut reader = BufReader::new(stream.try_clone().unwrap());
 
         loop  {
         let res = reader.read(&mut buf).unwrap();
         println!("Size of msg is {}", res);     
 
-        let s = match str::from_utf8(&buf) {
-            Ok(v) => v,
-       Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-       };
+    //     let s = match str::from_utf8(&buf) {
+    //         Ok(v) => v,
+    //    Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+    //    };
 
        let mut msg_bytes = buf.to_vec();
        
-       let mut cmd_stk: Vec<u8> = Vec::new();
+       let tokens = tokenizer(&mut msg_bytes);
+       let  (mut arrs,mut BStrs,mut Integers,mut Errors,mut SStrs) = (0,0,0,0,0);
+       let mut op_vec: Vec<String> = vec![];
+       for token in tokens{
+        let first_char = token.chars().nth(0);
+        let subseq: String = token.chars().collect();
+        println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
+       match first_char.unwrap() {
+        '+' => SStrs+=1,
+        '-' => Errors+=1,
+        ':' => Integers+=1,
+        '$' => BStrs +=1,
+        '*' =>  op_vec.push("_".to_string()),
+        //all chars
+        _ => {}
+       }
 
-       let mut tokens = tokenizer(&mut msg_bytes);
-
+    }
        
 
-
-       //println!("message: {}",s);
-       println!("1st token: {}", tokens.len());
+       let ans =stream.write(b"PONG");
+       
 
 
       }; 
