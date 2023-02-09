@@ -53,8 +53,11 @@ fn main() {
        let  (mut arrs,mut BStrs,mut Integers,mut Errors,mut SStrs) = (0,0,0,0,0);
        let mut op_vec: Vec<String> = vec![];
        for token in tokens{
-        let first_char = token.chars().nth(0);
-        let subseq: String = token.chars().collect();
+        let mut iter =token.chars();
+        let first_char = iter.nth(0);
+        iter.next();
+
+        let subseq: String = iter.collect();
         println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
        match first_char.unwrap() {
         '+' => SStrs+=1,
