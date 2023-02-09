@@ -21,8 +21,9 @@ fn main() {
         let mut reader = BufReader::new(buffer_slice);
         //let mut buf: Vec<u8> = vec![];
         for line in reader.lines(){
-            tokens.push(line.unwrap())
-            println!("line: {}",line.unwrap());
+            let elem = line.as_ref();
+            tokens.push(elem.unwrap().to_string());
+            println!("line: {}",elem.unwrap());
         }
         
 
