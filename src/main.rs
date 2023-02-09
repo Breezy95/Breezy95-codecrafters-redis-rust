@@ -1,3 +1,4 @@
+use std::fmt::Error;
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
  use std::{str, u8, vec};
@@ -78,11 +79,14 @@ fn main() {
 
     
     match operation {
-        "ping"  => {stream.write(b"+PONG\r\n")},
+        "ping"  => {stream.write(b"+PONG\r\n");},
 
-        "echo" => {stream.write(op_vec[1].as_bytes())},
+        "echo" => {let byte_str = b"+";
+                   let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
+                   stream.write(&packet[..]);
+                  },
         
-        _ => { Ok(1)}
+        _ => { Ok::<i32, Error>(1);}
     }
 
 
@@ -91,7 +95,7 @@ fn main() {
 
        
 
-       ;
+       
        
 
 
