@@ -22,7 +22,8 @@ fn main() {
 
         let mut buf = vec![];
         let len =reader.read_until(b'\r', &mut buf);
-        print!("len of  1st read{}", len.unwrap());
+        println!("len of  1st read: {}", len.unwrap());
+        println!("1st: {} 2nd: {} 3rd: {}", tokens[0],tokens[1], tokens[2]);
         tokens.clone_from(&buf);
         
 
