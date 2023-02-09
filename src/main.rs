@@ -4,14 +4,7 @@
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  
- enum Ops {
-    String,
-    Errors,
-    Integers,
-    BulkString,
-    Arrays
 
- }
 
  
 
@@ -24,14 +17,14 @@ fn main() {
     fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
         let mut tokens: Vec<u8> =  Vec::new();
         
-        let mut buffer_slice = &bytes_buff[..];
+        let buffer_slice = &bytes_buff[..];
         let mut reader = BufReader::new(buffer_slice);
 
         let mut buf = vec![];
         let len =reader.read_until(b'\r', &mut buf);
-        
+        print!("len of  1st read{}", len.unwrap());
         tokens.clone_from(&buf);
-        println!("{}",tokens[0]);
+        
 
         return tokens; 
     }
