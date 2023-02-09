@@ -14,17 +14,16 @@ fn main() {
     println!("Logs from your program will appear here!");
 
 
-    fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<u8> {
-        let mut tokens: Vec<u8> =  Vec::new();
+    fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
+        let mut tokens: Vec<String> =  Vec::new();
         
         let buffer_slice = &bytes_buff[..];
         let mut reader = BufReader::new(buffer_slice);
-
-        let mut buf = vec![];
-        let len =reader.read_until(b'\r', &mut buf);
-        println!("len of  1st read: {}", len.unwrap());
-        println!("1st: {} 2nd: {} 3rd: {}", tokens[0],tokens[1], tokens[2]);
-        tokens.clone_from(&buf);
+        //let mut buf: Vec<u8> = vec![];
+        for line in reader.lines(){
+            tokens.push(line.unwrap())
+            println!("line: {}",line.unwrap());
+        }
         
 
         return tokens; 
