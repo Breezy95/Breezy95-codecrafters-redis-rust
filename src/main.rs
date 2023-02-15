@@ -92,8 +92,12 @@ fn main() {
         "set" => {
             kvpairs.insert(&op_vec[1], &op_vec[2]); 
             stream.write(b"+OK");
+        },
+        "get" => { kvpairs.get(&op_vec[1]);
 
         }
+
+
         
         _ => { Ok::<i32, Error>(1);}
     }
