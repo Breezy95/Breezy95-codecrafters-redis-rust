@@ -79,7 +79,9 @@ fn main() {
         //array
         '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
         //all chars
-        _ => {op_vec.push(token.to_string())}
+        _ => {op_vec.push(token.to_string());
+              println!("token: {}", token);
+        }
        }
     }
 
