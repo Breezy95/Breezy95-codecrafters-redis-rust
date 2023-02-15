@@ -81,7 +81,7 @@ fn main() {
     }
 
     let operation: &str =op_vec[0].as_ref();
-    let mut kvpairs: HashMap<&String, &String> = HashMap::new();
+    let mut kvpairs: HashMap<&String, String> = HashMap::new();
     match operation {
         "ping"  => {stream.write(b"+PONG\r\n");},
 
@@ -90,11 +90,12 @@ fn main() {
                    stream.write(&packet[..]);
                   },
         "set" => {
-            kvpairs.insert(&op_vec[1], &op_vec[2]); 
+            kvpairs.insert(&op_vec[1], op_vec[2].to_string()); 
             stream.write(b"+OK");
         },
-        "get" => { kvpairs.get(&op_vec[1]);
-
+        "get" => { let returnee =kvpairs.get(&op_vec[1]);
+                   let packet = [b"+", returnee.unwrap().as_bytes(), b"\r\n"].concat();
+                   stream.write(&packet[..]);
         }
 
 
