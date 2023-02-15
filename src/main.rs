@@ -34,7 +34,7 @@ fn main() {
             }
             let elem = line.as_ref();
             tokens.push(elem.unwrap().to_string());
-            //println!("line: {}",elem.unwrap());
+            println!("line: {}",elem.unwrap());
         }
         
 
@@ -71,7 +71,7 @@ fn main() {
         let first_char = iter.nth(0);
 
         let subseq: String = iter.collect();
-        println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
+        //println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
 
 
        match first_char.unwrap() {
