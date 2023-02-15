@@ -91,7 +91,7 @@ fn main() {
                   },
         "set" => {
             kvpairs.insert(&op_vec[1], &op_vec[2]); 
-            stream.write(b"+/OK");
+            stream.write(b"+OK");
 
         }
         
