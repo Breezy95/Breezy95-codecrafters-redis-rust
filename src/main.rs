@@ -53,6 +53,7 @@ fn main() {
        let tokens = tokenizer(&mut msg_bytes);
        let  (mut arrs,mut BStrs,mut Integers,mut Errors,mut SStrs) = (0,0,0,0,0);
        let mut op_vec: Vec<String> = Vec::new();
+       let mut operands: Vec<String> = Vec::new();
 
 
        for token in tokens{
@@ -63,11 +64,10 @@ fn main() {
         let subseq: String = iter.collect();
         println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
 
+
        match first_char.unwrap() {
-        '+' => SStrs+=1,
-        '-' => Errors+=1,
-        ':' => Integers+=1,
-        '$' => {SStrs+=1},
+        '$' => {String::with_capacity(subseq.parse().unwrap());},
+        //array
         '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
         //all chars
         _ => {op_vec.push(token)}
