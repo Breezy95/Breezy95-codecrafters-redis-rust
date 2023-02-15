@@ -4,9 +4,15 @@ use std::fmt::Error;
  use std::{str, u8, vec};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
+ use std::collections::HashMap;
  
- 
+ fn encode() {
 
+ }
+
+fn decode() {
+
+}
 
  
 
@@ -40,7 +46,7 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
 
-        
+        loop  {
         let res = reader.read(&mut buf).unwrap();
         println!("Size of msg is {}", res);     
 
@@ -52,10 +58,76 @@ fn main() {
        let mut msg_bytes = buf.to_vec();
        
        let tokens = tokenizer(&mut msg_bytes);
+      
        let mut op_vec: Vec<String> = Vec::new();
-       let mut operands: Vec<String> = Vec::new();
+       //let mut operands: Vec<String> = Vec::new();
 
        
+       for token in &tokens[..]{
+        let mut iter =token.chars();
+        let first_char = iter.nth(0);
+
+        let subseq: String = iter.collect();
+        println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
+
+
+       match first_char.unwrap() {
+        '$' => {},
+        //array
+        '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
+        //all chars
+        _ => {op_vec.push(token.to_string())}
+       }
+    }
+
+    let operation: &str =op_vec[0].as_ref();
+    let mut kvpairs: HashMap<&String, &String> = HashMap::new();
+    match operation {
+        "ping"  => {stream.write(b"+PONG\r\n");},
+
+        "echo" => {let byte_str = b"+";
+                   let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
+                   stream.write(&packet[..]);
+                  },
+        "set" => {
+            kvpairs.insert(&op_vec[1], &op_vec[2]); 
+            stream.write(b"+/OK");
+
+        }
+        
+        _ => { Ok::<i32, Error>(1);}
+    }
+    
+
+
+
+    
+
+    
+    
+
+
+
+
+    
+    
+
+
+
+
+
+       
+
+       
+       
+
+
+      }; 
+
+    
+       
+    
+
     }
 
 
