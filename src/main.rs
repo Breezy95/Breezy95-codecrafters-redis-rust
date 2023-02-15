@@ -5,6 +5,7 @@ use std::fmt::Error;
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  
+ 
 
 
  
@@ -39,7 +40,7 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
 
-        loop  {
+        
         let res = reader.read(&mut buf).unwrap();
         println!("Size of msg is {}", res);     
 
@@ -51,60 +52,10 @@ fn main() {
        let mut msg_bytes = buf.to_vec();
        
        let tokens = tokenizer(&mut msg_bytes);
-       let  (mut arrs,mut BStrs,mut Integers,mut Errors,mut SStrs) = (0,0,0,0,0);
        let mut op_vec: Vec<String> = Vec::new();
        let mut operands: Vec<String> = Vec::new();
 
-
-       for token in tokens{
-
-        let mut iter =token.chars();
-        let first_char = iter.nth(0);
-
-        let subseq: String = iter.collect();
-        println!("first_char: {},subseq chars: {}",first_char.unwrap(),subseq);
-
-
-       match first_char.unwrap() {
-        '$' => {String::with_capacity(subseq.parse().unwrap());},
-        //array
-        '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
-        //all chars
-        _ => {op_vec.push(token)}
-       }
-    }
-
-    let operation: &str =op_vec[0].as_ref();
-    
-
-    
-    match operation {
-        "ping"  => {stream.write(b"+PONG\r\n");},
-
-        "echo" => {let byte_str = b"+";
-                   let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
-                   stream.write(&packet[..]);
-                  },
-        
-        _ => { Ok::<i32, Error>(1);}
-    }
-
-
-
-
-
        
-
-       
-       
-
-
-      }; 
-
-    
-       
-    
-
     }
 
 
