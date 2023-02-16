@@ -5,6 +5,7 @@ use std::fmt::Error;
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  use std::collections::HashMap;
+ use std::sync::Mutex;
  
  fn encode() {
 
@@ -34,7 +35,7 @@ fn main() {
             }
             let elem = line.as_ref();
             tokens.push(elem.unwrap().to_string());
-            println!("line: {}",elem.unwrap());
+            println!("line: {}, line len: {}",elem.unwrap(), line.as_ref().unwrap().len());
         }
         
 
@@ -95,6 +96,7 @@ fn main() {
                    stream.write(&packet[..]);
                   },
         "set" => {
+            
             kvpairs.insert(&op_vec[1], op_vec[2].to_string()); 
             stream.write(b"+OK");
         },
