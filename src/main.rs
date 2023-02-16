@@ -102,6 +102,9 @@ fn main() {
         },
         "get" => { let returnee =kvpairs.get(&op_vec[1]);
                    let packet = [b"+", returnee.unwrap().as_bytes(), b"\r\n"].concat();
+                   let string_pkt = String::from_utf8_lossy(&packet[..]);
+
+                   println!("current value being retrieved: {}", string_pkt);
                    stream.write(&packet[..]);
         }
 
