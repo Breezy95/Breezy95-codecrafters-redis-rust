@@ -1,11 +1,11 @@
-use std::fmt::Error;
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
- use std::{str, u8, vec};
+ use std::slice::Iter;
+use std::{str, u8, i32};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  use std::collections::HashMap;
- use std::sync::Mutex;
+
  
  fn encode() {
 
@@ -15,6 +15,31 @@ fn decode() {
 
 }
 
+
+
+fn set_values(mut kvmap: HashMap<String, String>,mut kv :Iter<String>) -> Result<Option<String>, &'static str>{
+    let values = kv.as_ref();
+    if values.len() < 2 {
+        return Err("no valid key");
+    }
+    let  key = kv.next().unwrap().to_owned();
+    let val = kv.next().unwrap().to_string().to_owned();
+    
+    let old_value =kvmap.insert( key, val.to_owned());
+
+
+    return Ok(old_value);  
+}
+
+fn get_values(key: String, kvmap: HashMap<String, String>) -> Result<String, &'static str> {
+let value = kvmap.get(&key);
+    if value.is_none(){
+        return Err("value is not in map");
+    }
+    return Ok(value.unwrap().to_string());
+
+
+}
  
 
 
@@ -80,14 +105,15 @@ fn main() {
         //array
         '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
         //all chars
-        _ => {if token.len() >0 {op_vec.push(token.to_string());};
+        _ => {if op_vec.len()<= op_vec.capacity() {op_vec.push(token.to_string());};
               println!("token: {}", token);
         }
        }
     }
-
-    let operation: &str =op_vec[0].as_ref();
-    let mut kvpairs: HashMap<&String, String> = HashMap::new();
+    //use iter instead of indexing
+    let mut op_iter = op_vec.iter();
+    let operation: &str =op_iter.next().unwrap();
+    let mut kvpairs: HashMap<String, String> = HashMap::new();
     match operation {
         "ping"  => {stream.write(b"+PONG\r\n");},
 
@@ -95,22 +121,27 @@ fn main() {
                    let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
                    stream.write(&packet[..]);
                   },
-        "set" => {
-            
-            kvpairs.insert(&op_vec[1], op_vec[2].to_string()); 
-            stream.write(b"+OK");
-        },
-        "get" => { let returnee =kvpairs.get(&op_vec[1]);
-                   let packet = [b"+", returnee.unwrap().as_bytes(), b"\r\n"].concat();
-                   let string_pkt = String::from_utf8_lossy(&packet[..]);
 
-                   println!("current value being retrieved: {}", string_pkt);
-                   stream.write(&packet[..]);
-        }
+        "set" => {let res =set_values(kvpairs,op_iter);
+                  if res.is_ok() {
+                    stream.write(b"+OK");
+                  }
+
+        },
+        "get" => {let key = op_iter.next().unwrap().to_owned(); 
+            let res = get_values(key, kvpairs);
+            if res.is_ok() {
+                println!("retrieved val: {}", res.as_ref().unwrap());
+                let val_stream = res.as_ref().unwrap().as_bytes();
+                let payload = [b"+",val_stream,b"\r\n"].concat();
+                stream.write(&payload[..]);
+            }
+
+        },
 
 
         
-        _ => { Ok::<i32, Error>(1);}
+        _ => { }
     }
     
 
