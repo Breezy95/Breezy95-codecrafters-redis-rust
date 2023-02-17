@@ -141,6 +141,9 @@ fn main() {
                 let len =stream.write(&payload[..]);
                 println!("Sent payload of len: {}", len.unwrap());
             }
+            else{
+                println!("error on getting val: {}",res.unwrap_err());
+            }
 
         },
 
