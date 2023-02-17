@@ -59,7 +59,7 @@ fn main() {
                 break
             }
             let elem = line.as_ref();
-            tokens.push(elem.unwrap().to_string());
+            tokens.push(elem.unwrap().to_owned());
             println!("line: {}, line len: {}",elem.unwrap(), line.as_ref().unwrap().len());
         }
         
