@@ -106,7 +106,7 @@ fn main() {
         '*' =>  op_vec =  Vec::with_capacity(str::parse(&subseq[..]).unwrap()),
         //all chars
         _ => {if op_vec.len()<= op_vec.capacity() {op_vec.push(token.to_string());};
-              println!("token: {}", token);
+              
         }
        }
     }
@@ -114,6 +114,7 @@ fn main() {
     let mut op_iter = op_vec.iter();
     let operation: &str =op_iter.next().unwrap();
     let mut kvpairs: HashMap<String, String> = HashMap::new();
+    println!("operation: {}", operation);
     match operation {
         "ping"  => {stream.write(b"+PONG\r\n");},
 
