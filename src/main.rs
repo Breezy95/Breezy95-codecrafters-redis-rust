@@ -116,7 +116,9 @@ fn main() {
     let mut kvpairs: HashMap<String, String> = HashMap::new();
     println!("operation: {}", operation);
     match operation {
-        "ping"  => {stream.write(b"+PONG\r\n");},
+        "ping"  => {let len =stream.write(b"+PONG\r\n");
+        println!("Sent payload of len: {}", len.unwrap());
+    },
 
         "echo" => {let byte_str = b"+";
                    let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
@@ -125,7 +127,8 @@ fn main() {
 
         "set" => {let res =set_values(kvpairs,op_iter);
                   if res.is_ok() {
-                    stream.write(b"+OK");
+                    let len =stream.write(b"+OK");
+                    println!("Sent payload of len: {}", len.unwrap());
                   }
 
         },
@@ -135,7 +138,8 @@ fn main() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
                 let val_stream = res.as_ref().unwrap().as_bytes();
                 let payload = [b"+",val_stream,b"\r\n"].concat();
-                stream.write(&payload[..]);
+                let len =stream.write(&payload[..]);
+                println!("Sent payload of len: {}", len.unwrap());
             }
 
         },
