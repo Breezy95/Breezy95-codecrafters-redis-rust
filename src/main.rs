@@ -18,6 +18,7 @@ fn decode() {
 
 
 fn set_values(mut kvmap: HashMap<String, String>,mut kv :Iter<String>) -> Result<Option<String>, &'static str>{
+    
     let values = kv.as_ref();
     if values.len() < 2 {
         return Err("no valid key");
@@ -127,7 +128,7 @@ fn main() {
 
         "set" => {let res =set_values(kvpairs,op_iter);
                   if res.is_ok() {
-                    let len =stream.write(b"+OK");
+                    let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
                   }
 
