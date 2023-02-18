@@ -19,7 +19,7 @@ fn decode() {
 
 
 
-fn set_values(  kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
     let values = kv.clone();
     if values.len() < 2 {
@@ -90,7 +90,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
-        let newkvpair = kvpairs.clone();
+        let mut newkvpair = kvpairs.clone();
         loop  {
         let res = reader.read(&mut buf).unwrap();     
 
@@ -139,7 +139,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         "set" => { 
                 
                 let mut iter_clone = op_iter.clone();
-                let res =set_values(newkvpair.clone(),&mut op_iter);
+                let res =set_values(&mut newkvpair,&mut op_iter);
                 
                   if res.is_ok() {
                     iter_clone.next();
