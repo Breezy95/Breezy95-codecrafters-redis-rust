@@ -1,3 +1,4 @@
+use std::iter::Peekable;
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
  use std::slice::Iter;
@@ -17,9 +18,9 @@ fn decode() {
 
 
 
-fn set_values(mut kvmap: HashMap<String, String>,mut kv :Iter<String>) -> Result<Option<String>, &'static str>{
+fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
-    let values = kv.as_ref();
+    let values = kv.clone();
     if values.len() < 2 {
         return Err("no valid key");
     }
@@ -61,7 +62,7 @@ fn main() {
             }
             let elem = line.as_ref();
             tokens.push(elem.unwrap().to_owned());
-            println!("line: {}, line len: {}",elem.unwrap(), line.as_ref().unwrap().len());
+
         }
         
 
@@ -112,8 +113,8 @@ fn main() {
        }
     }
     //use iter instead of indexing
-    let mut op_iter = op_vec.iter();
-    let operation: &str =op_iter.next().unwrap();
+    let mut op_iter = op_vec.iter().peekable();
+    let operation: &str =op_iter.peek().unwrap();
     let mut kvpairs: HashMap<String, String> = HashMap::new();
     println!("operation: {}", operation);
     match operation {
@@ -126,8 +127,12 @@ fn main() {
                    stream.write(&packet[..]);
                   },
 
-        "set" => {let res =set_values(kvpairs,op_iter);
+        "set" => { 
+                let mut iter_clone = op_iter.clone();
+                let res =set_values(kvpairs,&mut op_iter);
                   if res.is_ok() {
+                    let clone_peek = iter_clone.peek();
+                    println!("{}",clone_peek.unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
                   }
