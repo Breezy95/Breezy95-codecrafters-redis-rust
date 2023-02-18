@@ -47,16 +47,19 @@ fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<
 }
 
 fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
-    let value;
+
     if let Ok(mut kvp1) = kvmap.lock(){
-        value = kvp1.get(&key);
-    }
+        let value = kvp1.get(&key);
+    
 
     if value.is_none(){
         return Err("value is not in map");
     }
     return Ok(value.unwrap().to_string());
-
+    }
+    else{
+        Err("error in locking mutex")
+    }
 
 }
  
@@ -94,7 +97,7 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
 
-        loop  {
+//        loop  {
         let res = reader.read(&mut buf).unwrap();
         println!("Size of msg is {}", res);     
 
@@ -204,7 +207,7 @@ fn main() {
        
 
 
-      }; 
+      //}; 
 
     
        
@@ -220,9 +223,9 @@ fn main() {
             
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
-                 let kvp_clone = kvpairs.clone();
+                 let kvpairs = kvpairs.clone();
                  thread::spawn(move || loop {
-                 conn_handler( &mut succ_stream,  kvp_clone);
+                 conn_handler( &mut succ_stream,  kvpairs.clone());
                  });
                 
              }
