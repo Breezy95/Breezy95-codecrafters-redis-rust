@@ -33,9 +33,9 @@ fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<
         kvp1.insert( key.to_owned(), val.to_owned());
         let  map_value  = kvp1.get(&key);
         let x =map_value.clone();
-        x.clone_into(&mut mapped_val);
+        
 
-        return Ok(Some(mapped_val.unwrap().to_owned()));
+        return Ok(Some(x.unwrap().to_owned()));
     }
     else{
         Err("Could not lock mutex")
