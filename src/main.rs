@@ -19,7 +19,7 @@ fn decode() {
 
 
 
-fn set_values( kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values( mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
     let values = kv.clone();
     if values.len() < 2 {
@@ -86,8 +86,8 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
-
-        //loop  {
+        let newkvpair = kvpairs.clone();
+        loop  {
         let res = reader.read(&mut buf).unwrap();     
 
        let mut msg_bytes = buf.to_vec();
@@ -135,7 +135,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         "set" => { 
                 
                 let mut iter_clone = op_iter.clone();
-                let res =set_values(kvpairs,&mut op_iter);
+                let res =set_values(newkvpair.clone(),&mut op_iter);
                 
                   if res.is_ok() {
                     iter_clone.next();
@@ -147,7 +147,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
 
         },
         "get" => {let key = op_iter.next().unwrap().to_owned(); 
-            let res = get_values(key, kvpairs);
+            let res = get_values(key, newkvpair.clone());
             if res.is_ok() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
                 let val_stream = res.as_ref().unwrap().as_bytes();
@@ -168,20 +168,23 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
     
 
 
-     // }; 
+      }; 
     }
+
+
+
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     println!("Logs from your program will appear here!");
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
-     let  kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
+     let mut kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
      for stream in listener.incoming() {
         match stream {
             
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
                  let arc_kvpairs_clone = Arc::clone(&kvpairs);
-                 thread::spawn(move ||   conn_handler( &mut succ_stream,  arc_kvpairs_clone));
+                 thread::spawn(move ||  conn_handler( &mut succ_stream,  arc_kvpairs_clone) );
                 
              }
              Err(e) => {
