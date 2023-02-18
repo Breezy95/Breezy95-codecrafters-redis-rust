@@ -19,7 +19,7 @@ fn decode() {
 
 
 
-fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values( kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
     let values = kv.clone();
     if values.len() < 2 {
@@ -27,12 +27,12 @@ fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<
     }
     let  key = kv.next().unwrap().to_owned();
     let val = kv.next().unwrap().to_string().to_owned();
-    let mut mapped_val: Option<&String> = None;
-
+    
+    println!("set_values method: key: {}, value: {}", key.clone(),val.clone());
     if let Ok(mut kvp1) = kvmap.lock(){
         kvp1.insert( key.to_owned(), val.to_owned());
         let  map_value  = kvp1.get(&key);
-        let x =map_value.clone();
+        let x =map_value.as_deref();
         
 
         return Ok(Some(x.unwrap().to_owned()));
@@ -48,13 +48,14 @@ fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<
 
 fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
 
-    if let Ok(mut kvp1) = kvmap.lock(){
+    if let Ok( kvp1) = kvmap.lock(){
         let value = kvp1.get(&key);
-        println!("retrieved value is: {}",value.unwrap());
-
+        
     if value.is_none(){
         return Err("value is not in map");
     }
+
+    println!("retrieved value is: {}",value.unwrap());
     return Ok(value.unwrap().to_string());
     }
     else{
