@@ -27,10 +27,11 @@ fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>
     let  key = kv.next().unwrap().to_owned();
     let val = kv.next().unwrap().to_string().to_owned();
     
-    let old_value =kvmap.insert( key, val.to_owned());
+    let old_value =kvmap.insert( key.clone(), val.to_owned());
 
+    let mapped_val = kvmap.get(&key);
 
-    return Ok(Some(val.to_owned()));  
+    return Ok(Some(mapped_val.unwrap().to_owned()));  
 }
 
 fn get_values(key: String, kvmap: HashMap<String, String>) -> Result<String, &'static str> {
