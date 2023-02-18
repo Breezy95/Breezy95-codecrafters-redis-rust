@@ -132,7 +132,7 @@ fn main() {
                 let res =set_values(kvpairs,&mut op_iter);
                   if res.is_ok() {
                     let clone_peek = iter_clone.peek();
-                    println!("{}",clone_peek.unwrap());
+                    println!("value of key: {}",clone_peek.unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
                   }
