@@ -176,13 +176,13 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
 
         },
         "get" => {let mut keyval = op_iter.next().unwrap().clone();
-            keyval = op_iter.next().unwrap().clone();
+            let keyval2 = op_iter.next().unwrap().clone();
             println!("map size in get: {}", test_map.len());
             for key in test_map.keys(){
                 println!("keysloop get method: {key}");
             }
 
-            let res = get_values(keyval,&mut test_map);
+            let res = get_values(keyval2,&mut test_map);
             if res.is_ok() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
                 let val_stream = res.as_ref().unwrap().as_bytes();
