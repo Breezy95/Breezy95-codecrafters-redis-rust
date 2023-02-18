@@ -131,6 +131,7 @@ fn main() {
                 let mut iter_clone = op_iter.clone();
                 let res =set_values(kvpairs,&mut op_iter);
                   if res.is_ok() {
+                    iter_clone.next();
                     let clone_peek = iter_clone.peek();
                     println!("value of key: {}",clone_peek.unwrap());
                     let len =stream.write(b"+OK\r\n");
