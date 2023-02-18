@@ -149,7 +149,6 @@ fn main() {
                 let res =set_values(kvpairs,&mut op_iter);
                 
                   if res.is_ok() {
-                    ;
                     iter_clone.next();
                     let clone_peek = iter_clone.peek();
                     println!("value of key: {}, value in map: {}",clone_peek.unwrap(), res.unwrap().unwrap());
@@ -185,15 +184,15 @@ fn main() {
 
 
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
-     let  kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::default()));
+     let  kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
      for stream in listener.incoming() {
         match stream {
             
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
-                 let kvpairs = kvpairs.clone();
-                 thread::spawn(move || loop {
-                 conn_handler( &mut succ_stream,  kvpairs.clone());
+                 let arc_kvpairs_clone = Arc::clone(&kvpairs);
+                 thread::spawn(move ||  {
+                 conn_handler( &mut succ_stream,  arc_kvpairs_clone);
                  });
                 
              }
