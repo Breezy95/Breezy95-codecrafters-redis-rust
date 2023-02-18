@@ -30,7 +30,7 @@ fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>
     let old_value =kvmap.insert( key, val.to_owned());
 
 
-    return Ok(old_value);  
+    return Ok(Some(val.to_owned()));  
 }
 
 fn get_values(key: String, kvmap: HashMap<String, String>) -> Result<String, &'static str> {
