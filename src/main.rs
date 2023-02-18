@@ -29,6 +29,7 @@ fn decode() {
     
     
     let mut iter = kv.clone();
+    iter.next();
     let  key = iter.next().unwrap();
     println!("value of op_iter at key index: {}, val of key var: {}",iter.peek().unwrap(), key);
     let val = iter.next().unwrap().to_string().to_owned();
