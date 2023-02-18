@@ -175,8 +175,8 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                   }
 
         },
-        "get" => {let keyval = op_iter.next().unwrap().to_owned();
-            op_iter.next();
+        "get" => {let mut keyval = op_iter.next().unwrap().clone();
+            keyval = op_iter.next().unwrap().clone();
             println!("map size in get: {}", test_map.len());
             for key in test_map.keys(){
                 println!("keys set method: {key}");
