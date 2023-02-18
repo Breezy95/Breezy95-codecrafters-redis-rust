@@ -98,7 +98,7 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
 
-        loop  {
+        //loop  {
         let res = reader.read(&mut buf).unwrap();     
 
        let mut msg_bytes = buf.to_vec();
@@ -180,7 +180,7 @@ fn main() {
     
 
 
-      }; 
+      //}; 
     }
 
 
