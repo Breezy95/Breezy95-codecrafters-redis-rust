@@ -19,8 +19,8 @@ fn decode() {
 
 
 
-fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
-    
+//fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+    fn set_values( mut kvmap: &mut HashMap<String, String>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{  
     let values = kv.clone();
     if values.len() < 2 {
         return Err("no valid key");
@@ -29,20 +29,30 @@ fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekab
     
     
     let mut iter = kv.clone();
-    if let Ok(mut kvp1) = kvmap.lock(){
-        let  key = iter.next().unwrap();
+    let  key = iter.next().unwrap();
+    let val = iter.next().unwrap().to_string().to_owned();
 
-        let val = iter.next().unwrap().to_string().to_owned();
+    kvmap.insert( key.to_owned(), val.to_owned());
+    let def = "cannot set value".to_owned();
+    let  map_value  = kvmap.get(key).unwrap_or(&def);
+    return Ok(Some(map_value.clone()));
+    
+    
+    
+    // if let Ok(mut kvp1) = kvmap.lock(){
+    //     let  key = iter.next().unwrap();
 
-        kvp1.insert( key.to_owned(), val.to_owned());
+    //     let val = iter.next().unwrap().to_string().to_owned();
+
+    //     kvp1.insert( key.to_owned(), val.to_owned());
         
-        let def = "cannot set value".to_owned();
-        let  map_value  = kvp1.get(key).unwrap_or(&def);
-        return Ok(Some(map_value.clone()));
-    }
-    else{
-        Err("Could not lock mutex")
-    }
+    //     let def = "cannot set value".to_owned();
+    //     let  map_value  = kvp1.get(key).unwrap_or(&def);
+    //     return Ok(Some(map_value.clone()));
+    // }
+    // else{
+    //     Err("Could not lock mutex")
+    // }
 
 
     
@@ -50,18 +60,24 @@ fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekab
       
 }
 
-fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
-
-    if let Ok( kvp1) = kvmap.lock(){
+// fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
+    fn get_values(key: String, kvmap: &mut HashMap<String, String>) -> Result<String, &'static str> {
         let err_msg = "invalid key".to_owned();
-        let value = kvp1.get(&key).unwrap_or(&err_msg);
+        let value = kvmap.get(&key).unwrap_or(&err_msg); 
 
-    println!("retrieved value is: {}",value);
-    return Ok(value.to_string());
-    }
-    else{
-        Err("error in locking mutex")
-    }
+        return Ok(value.to_string());      
+    
+    
+    // if let Ok( kvp1) = kvmap.lock(){
+    //     let err_msg = "invalid key".to_owned();
+    //     let value = kvp1.get(&key).unwrap_or(&err_msg);
+
+    // println!("retrieved value is: {}",value);
+    // return Ok(value.to_string());
+    // }
+    // else{
+    //     Err("error in locking mutex")
+    // }
 
 }
  
@@ -91,6 +107,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
         let mut newkvpair = kvpairs.clone();
+        let mut test_map = std::collections::HashMap::<String, String>::new();
         loop  {
         let res = reader.read(&mut buf).unwrap();     
 
@@ -139,7 +156,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         "set" => { 
                 
                 let mut iter_clone = op_iter.clone();
-                let res =set_values(&mut newkvpair,&mut op_iter);
+                let res =set_values(&mut test_map,&mut op_iter);
                 
                   if res.is_ok() {
                     iter_clone.next();
@@ -152,7 +169,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
 
         },
         "get" => {let key = op_iter.next().unwrap().to_owned(); 
-            let res = get_values(key, newkvpair.clone());
+            let res = get_values(key,&mut test_map);
             if res.is_ok() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
                 let val_stream = res.as_ref().unwrap().as_bytes();
