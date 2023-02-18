@@ -98,14 +98,8 @@ fn main() {
         let mut buf = [0;512]; 
         let mut reader = BufReader::new(stream.try_clone().unwrap());
 
-//        loop  {
-        let res = reader.read(&mut buf).unwrap();
-        println!("Size of msg is {}", res);     
-
-    //     let s = match str::from_utf8(&buf) {
-    //         Ok(v) => v,
-    //    Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
-    //    };
+        loop  {
+        let res = reader.read(&mut buf).unwrap();     
 
        let mut msg_bytes = buf.to_vec();
        
@@ -150,14 +144,14 @@ fn main() {
                   },
 
         "set" => { 
+                
                 let mut iter_clone = op_iter.clone();
                 let res =set_values(kvpairs,&mut op_iter);
                 
                   if res.is_ok() {
-                    
+                    ;
                     iter_clone.next();
                     let clone_peek = iter_clone.peek();
-
                     println!("value of key: {}, value in map: {}",clone_peek.unwrap(), res.unwrap().unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
@@ -186,39 +180,12 @@ fn main() {
     
 
 
-
-    
-
-    
-    
-
-
-
-
-    
-    
-
-
-
-
-
-       
-
-       
-       
-
-
-      //}; 
-
-    
-       
-    
-
+      }; 
     }
 
 
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
-     let mut kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
+     let  kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::default()));
      for stream in listener.incoming() {
         match stream {
             
