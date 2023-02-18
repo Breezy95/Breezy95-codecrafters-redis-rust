@@ -19,7 +19,7 @@ fn decode() {
 
 
 
-fn set_values( mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values(  kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
     let values = kv.clone();
     if values.len() < 2 {
@@ -32,16 +32,14 @@ fn set_values( mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable
     if let Ok(mut kvp1) = kvmap.lock(){
         kvp1.insert( key.clone(), val.clone());
         let  map_value  = kvp1.get(&key);
-        let x =map_value.as_deref();
-        
 
-        return Ok(Some(x.unwrap().to_owned()));
+        return Ok(Some(map_value.unwrap().to_owned()));
     }
     else{
         Err("Could not lock mutex")
     }
- 
 
+    
 
       
 }
@@ -143,6 +141,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                     println!("value of key: {}, value in map: {}",clone_peek.unwrap(), res.unwrap().unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
+                    thread::sleep(core::time::Duration::from_millis(10));
                   }
 
         },
