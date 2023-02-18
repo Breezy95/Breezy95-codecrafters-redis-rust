@@ -161,9 +161,9 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                   if res.is_ok() {
                     iter_clone.next();
                     let clone_peek = iter_clone.peek().unwrap().clone();
-                    let val = test_map.get(clone_peek);
+                    
                     stream.write(b"+OK\r\n");
-                    println!("value of key: {}, value in map: {}",clone_peek, val.unwrap());
+                    println!("value of key: {}, map size: {}",clone_peek, test_map.len());
                     //println!("Sent payload of len: {}", len.unwrap());
                     
                   }
