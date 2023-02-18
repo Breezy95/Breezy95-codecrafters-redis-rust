@@ -30,7 +30,9 @@ fn decode() {
     
     let mut iter = kv.clone();
     let  key = iter.next().unwrap();
+    println!("value of op_iter at key index: {}",iter.peek().unwrap());
     let val = iter.next().unwrap().to_string().to_owned();
+    println!("value of op_iter at val ind: {}",iter.peek().unwrap());
 
     kvmap.insert( key.to_owned(), val.to_owned());
     let def = "cannot set value".to_owned();
@@ -156,7 +158,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         "set" => { 
                 
                 //let mut iter_clone = op_iter.clone();
-                println!("value of op_iter: {}",op_iter.peek().unwrap());
+                
                 let res =set_values(&mut test_map,&mut op_iter);
                 
                   if res.is_ok() {
