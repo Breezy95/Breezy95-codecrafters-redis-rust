@@ -2,6 +2,7 @@ use std::iter::Peekable;
 // Uncomment this block to pass the first stage
  use std::net::{TcpListener,TcpStream};
  use std::slice::Iter;
+use std::sync::{Mutex, Arc};
 use std::{str, u8, i32};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
@@ -18,7 +19,7 @@ fn decode() {
 
 
 
-fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values(mut kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     
     let values = kv.clone();
     if values.len() < 2 {
@@ -26,19 +27,34 @@ fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>
     }
     let  key = kv.next().unwrap().to_owned();
     let val = kv.next().unwrap().to_string().to_owned();
-    
-    let old_value =kvmap.insert( key.clone(), val.to_owned());
+    let mut mapped_val: Option<&String> = None;
 
-    let mapped_val = kvmap.get(&key);
+    if let Ok(mut kvp1) = kvmap.lock(){
+        kvp1.insert( key.to_owned(), val.to_owned());
+        let  map_value  = kvp1.get(&key);
+        let x =map_value.clone();
+        x.clone_into(&mut mapped_val);
 
-    return Ok(Some(mapped_val.unwrap().to_owned()));  
+        return Ok(Some(mapped_val.unwrap().to_owned()));
+    }
+    else{
+        Err("Could not lock mutex")
+    }
+ 
+
+
+      
 }
 
-fn get_values(key: String, kvmap: HashMap<String, String>) -> Result<String, &'static str> {
-let value = kvmap.get(&key);
-    // if value.is_none(){
-    //     return Err("value is not in map");
-    // }
+fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
+    let value;
+    if let Ok(mut kvp1) = kvmap.lock(){
+        value = kvp1.get(&key);
+    }
+
+    if value.is_none(){
+        return Err("value is not in map");
+    }
     return Ok(value.unwrap().to_string());
 
 
@@ -72,7 +88,7 @@ fn main() {
 
     
     
-    fn conn_handler( stream: &mut TcpStream) {
+    fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String>>>) {
         
         
         let mut buf = [0;512]; 
@@ -116,16 +132,16 @@ fn main() {
     //use iter instead of indexing
     let mut op_iter = op_vec.iter().peekable();
     let operation: &str =op_iter.peek().unwrap();
-    let mut kvpairs: HashMap<String, String> = HashMap::new();
-    let mut map_clone = kvpairs.clone();
+    
+    
     println!("operation: {}", operation);
     match operation {
         "ping"  => {let len =stream.write(b"+PONG\r\n");
         println!("Sent payload of len: {}", len.unwrap());
     },
 
-        "echo" => {let byte_str = b"+";
-                   let packet =[byte_str, op_vec[1].as_bytes(), b"\r\n"].concat();        
+        "echo" => {
+                   let packet =[b"+", op_vec[1].as_bytes(), b"\r\n"].concat();        
                    stream.write(&packet[..]);
                   },
 
@@ -198,14 +214,15 @@ fn main() {
 
 
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
-    //
+     let mut kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
      for stream in listener.incoming() {
         match stream {
             
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
-                 thread::spawn(move || {
-                 conn_handler( &mut succ_stream);
+                 let kvp_clone = kvpairs.clone();
+                 thread::spawn(move || loop {
+                 conn_handler( &mut succ_stream,  kvp_clone);
                  });
                 
              }
