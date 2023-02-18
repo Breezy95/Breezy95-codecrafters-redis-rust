@@ -30,7 +30,7 @@ fn set_values( kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Ite
     
     println!("set_values method: key: {}, value: {}", key.clone(),val.clone());
     if let Ok(mut kvp1) = kvmap.lock(){
-        kvp1.insert( key.to_owned(), val.to_owned());
+        kvp1.insert( key.clone(), val.clone());
         let  map_value  = kvp1.get(&key);
         let x =map_value.as_deref();
         
@@ -49,14 +49,11 @@ fn set_values( kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Ite
 fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
 
     if let Ok( kvp1) = kvmap.lock(){
-        let value = kvp1.get(&key);
-        
-    if value.is_none(){
-        return Err("value is not in map");
-    }
+        let err_msg = "invalid key".to_owned();
+        let value = kvp1.get(&key).unwrap_or(&err_msg);
 
-    println!("retrieved value is: {}",value.unwrap());
-    return Ok(value.unwrap().to_string());
+    println!("retrieved value is: {}",value);
+    return Ok(value.to_string());
     }
     else{
         Err("error in locking mutex")
@@ -179,7 +176,7 @@ fn main() {
     
 
 
-      //}; 
+     // }; 
     }
 
 
