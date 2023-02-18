@@ -50,7 +50,7 @@ fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result
 
     if let Ok(mut kvp1) = kvmap.lock(){
         let value = kvp1.get(&key);
-    
+        println!("retrieved value is: {}",value.unwrap());
 
     if value.is_none(){
         return Err("value is not in map");
