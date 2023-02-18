@@ -30,9 +30,9 @@ fn decode() {
     
     let mut iter = kv.clone();
     let  key = iter.next().unwrap();
-    println!("value of op_iter at key index: {}",iter.peek().unwrap());
+    println!("value of op_iter at key index: {}, val of key var: {}",iter.peek().unwrap(), key);
     let val = iter.next().unwrap().to_string().to_owned();
-    println!("value of op_iter at val ind: {}",iter.peek().unwrap());
+    println!("value of op_iter at val ind: {}, val of val var: {}",iter.peek().unwrap(), val);
 
     kvmap.insert( key.to_owned(), val.to_owned());
     let def = "cannot set value".to_owned();
