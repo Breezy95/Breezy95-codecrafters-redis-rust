@@ -169,7 +169,8 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                   }
 
         },
-        "get" => {let key = op_iter.next().unwrap().to_owned(); 
+        "get" => {let key = op_iter.next().unwrap().to_owned();
+            println!("map size in get: {}", test_map.len());
             let res = get_values(key,&mut test_map);
             if res.is_ok() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
