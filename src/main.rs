@@ -61,14 +61,7 @@ fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result
 
 }
  
-
-
-fn main() {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-    println!("Logs from your program will appear here!");
-
-
-    fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
+fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
         let mut tokens: Vec<String> =  Vec::new();
         
         let buffer_slice = &bytes_buff[..];
@@ -87,9 +80,8 @@ fn main() {
         return tokens; 
     }
 
-    
-    
-    fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String>>>) {
+
+fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String>>>) {
         
         
         let mut buf = [0;512]; 
@@ -178,8 +170,9 @@ fn main() {
 
      // }; 
     }
-
-
+fn main() {
+    // You can use print statements as follows for debugging, they'll be visible when running tests.
+    println!("Logs from your program will appear here!");
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
      let  kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
      for stream in listener.incoming() {
