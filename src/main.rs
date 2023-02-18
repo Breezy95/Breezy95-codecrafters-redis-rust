@@ -116,6 +116,7 @@ fn main() {
     let mut op_iter = op_vec.iter().peekable();
     let operation: &str =op_iter.peek().unwrap();
     let mut kvpairs: HashMap<String, String> = HashMap::new();
+    let mut map_clone = kvpairs.clone();
     println!("operation: {}", operation);
     match operation {
         "ping"  => {let len =stream.write(b"+PONG\r\n");
@@ -130,10 +131,13 @@ fn main() {
         "set" => { 
                 let mut iter_clone = op_iter.clone();
                 let res =set_values(kvpairs,&mut op_iter);
+                
                   if res.is_ok() {
+                    
                     iter_clone.next();
                     let clone_peek = iter_clone.peek();
-                    println!("value of key: {}",clone_peek.unwrap());
+
+                    println!("value of key: {}, value in map: {}",clone_peek.unwrap(), res.unwrap().unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
                   }
