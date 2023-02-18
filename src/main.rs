@@ -25,19 +25,25 @@ fn set_values(  kvmap: Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<It
     if values.len() < 2 {
         return Err("no valid key");
     }
-    let  key = kv.next().unwrap().to_owned();
-    let val = kv.next().unwrap().to_string().to_owned();
-    
-    println!("set_values method: key: {}, value: {}", key.clone(),val.clone());
-    if let Ok(mut kvp1) = kvmap.lock(){
-        kvp1.insert( key.clone(), val.clone());
-        let  map_value  = kvp1.get(&key);
 
-        return Ok(Some(map_value.unwrap().to_owned()));
+    
+    
+    let mut iter = kv.clone();
+    if let Ok(mut kvp1) = kvmap.lock(){
+        let  key = iter.next().unwrap();
+
+        let val = iter.next().unwrap().to_string().to_owned();
+
+        kvp1.insert( key.clone(), val.clone());
+        
+        let def = "cannot set value".to_owned();
+        let  map_value  = kvp1.get(key).unwrap_or(&def);
+        return Ok(Some(map_value.clone()));
     }
     else{
         Err("Could not lock mutex")
     }
+
 
     
 
@@ -141,7 +147,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                     println!("value of key: {}, value in map: {}",clone_peek.unwrap(), res.unwrap().unwrap());
                     let len =stream.write(b"+OK\r\n");
                     println!("Sent payload of len: {}", len.unwrap());
-                    thread::sleep(core::time::Duration::from_millis(10));
+                    
                   }
 
         },
