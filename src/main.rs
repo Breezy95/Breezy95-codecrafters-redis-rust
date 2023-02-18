@@ -163,14 +163,21 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                     let clone_peek = iter_clone.peek().unwrap().clone();
                     
                     stream.write(b"+OK\r\n");
-                    println!("value of key: {}, map size: {}",clone_peek, test_map.len());
-                    //println!("Sent payload of len: {}", len.unwrap());
+                    for key in test_map.keys(){
+                        println!("keys set method: {key}");
+                    }
+                    
+                    
                     
                   }
 
         },
         "get" => {let key = op_iter.next().unwrap().to_owned();
             println!("map size in get: {}", test_map.len());
+            for key in test_map.keys(){
+                println!("keys set method: {key}");
+            }
+
             let res = get_values(key,&mut test_map);
             if res.is_ok() {
                 println!("retrieved val: {}", res.as_ref().unwrap());
