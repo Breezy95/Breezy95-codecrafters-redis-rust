@@ -36,9 +36,9 @@ fn set_values(mut kvmap: HashMap<String, String>, kv :&mut Peekable<Iter<String>
 
 fn get_values(key: String, kvmap: HashMap<String, String>) -> Result<String, &'static str> {
 let value = kvmap.get(&key);
-    if value.is_none(){
-        return Err("value is not in map");
-    }
+    // if value.is_none(){
+    //     return Err("value is not in map");
+    // }
     return Ok(value.unwrap().to_string());
 
 
