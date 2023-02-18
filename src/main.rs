@@ -188,9 +188,7 @@ fn main() {
              Ok( mut succ_stream) => {
                  println!("accepted new connection");
                  let arc_kvpairs_clone = Arc::clone(&kvpairs);
-                 thread::spawn(move ||  {
-                 conn_handler( &mut succ_stream,  arc_kvpairs_clone);
-                 });
+                 thread::spawn(move ||   conn_handler( &mut succ_stream,  arc_kvpairs_clone));
                 
              }
              Err(e) => {
