@@ -34,7 +34,7 @@ fn set_values(  kvmap: &mut Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekab
 
         let val = iter.next().unwrap().to_string().to_owned();
 
-        kvp1.insert( key.clone(), val.clone());
+        kvp1.insert( key.to_owned(), val.to_owned());
         
         let def = "cannot set value".to_owned();
         let  map_value  = kvp1.get(key).unwrap_or(&def);
