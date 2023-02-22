@@ -159,11 +159,14 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
 
         "set" => { 
                 
+                //let mut iter_clone = op_iter.clone();
+                
                 let res =set_values(  newkvpair.clone(),&mut op_iter);
-                let def = "Error in peeking at iter".to_owned();
-               // println!("value of iterator: {}", op_iter.peek().unwrap_or(def));
+                
                   if res.is_ok() {
-
+                    //iter_clone.next();
+                   // let clone_peek = iter_clone.peek().unwrap().clone();
+                    
                     stream.write(b"+OK\r\n");
                     
                     
