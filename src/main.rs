@@ -31,9 +31,9 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<I
     let mut iter = kv.clone();
     iter.next();
     let  key = iter.next().unwrap();
-    println!("value of op_iter at key index: {}, val of key var: {}",iter.peek().unwrap(), key);
-    let val = iter.next().unwrap().to_string().to_owned();
-    println!("value of op_iter at val ind: {}, val of val var: {}",iter.peek().unwrap(), val);
+   
+    let val = iter.next();//.unwrap().to_string().to_owned();
+ 
 
     // kvmap.insert( key.to_owned(), val.to_owned());
     // let def = "cannot set value".to_owned();
