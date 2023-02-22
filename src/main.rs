@@ -147,7 +147,7 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
                 //let mut iter_clone = op_iter.clone();
                 
                 let res =set_values(  newkvpair.clone(),&mut op_iter);
-                
+                op_iter.next();
                   if res.is_ok() {
                     //iter_clone.next();
                    // let clone_peek = iter_clone.peek().unwrap().clone();
