@@ -153,9 +153,10 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
         "set" => { 
                 
                 
+                
+                let res =set_values(  newkvpair.clone(),&mut op_iter);
                 let elems: Vec<&String> =op_iter.clone().collect();
                 println!("current elems in op_iter{:?}", &elems[0..elems.len()-1]);
-                let res =set_values(  newkvpair.clone(),&mut op_iter);
                 op_iter.next();
                   if res.is_ok() {
                     //iter_clone.next();
