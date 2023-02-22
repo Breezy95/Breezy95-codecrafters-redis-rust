@@ -3,7 +3,7 @@ use std::iter::Peekable;
  use std::net::{TcpListener,TcpStream};
  use std::slice::Iter;
 use std::sync::{Mutex, Arc};
-use std::{str, u8, i32};
+use std::{str, u8};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  use std::collections::HashMap;
@@ -28,20 +28,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<I
 
     
     
-    let mut iter = kv.clone();
-    //iter.next();
-    //let  key = iter.next().unwrap();
-   
-   // let val = iter.next();//.unwrap().to_string().to_owned();
- 
-
-    // kvmap.insert( key.to_owned(), val.to_owned());
-    // let def = "cannot set value".to_owned();
-    // let  map_value  = kvmap.get(key).unwrap_or(&def);
-    // return Ok(Some(map_value.clone()));
-    
-    
-    
+    let mut iter = values;    
     if let Ok(mut kvp1) = kvmap.lock(){
         iter.next();
         let  key = iter.next().unwrap();
