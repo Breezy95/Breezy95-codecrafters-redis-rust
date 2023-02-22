@@ -30,9 +30,9 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<I
     
     let mut iter = kv.clone();
     iter.next();
-    let  key = iter.next().unwrap();
+    //let  key = iter.next().unwrap();
    
-    let val = iter.next();//.unwrap().to_string().to_owned();
+   // let val = iter.next();//.unwrap().to_string().to_owned();
  
 
     // kvmap.insert( key.to_owned(), val.to_owned());
