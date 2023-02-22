@@ -25,10 +25,8 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<I
     if values.len() < 2 {
         return Err("no valid key");
     }
-
-    
-    
-    let mut iter = values;    
+ 
+    let mut iter = kv;    
     if let Ok(mut kvp1) = kvmap.lock(){
         iter.next();
         let  key = iter.next().unwrap();
