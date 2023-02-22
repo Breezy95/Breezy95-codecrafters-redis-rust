@@ -8,6 +8,14 @@ use std::{str, u8};
  use std::thread;
  use std::collections::HashMap;
 
+enum RespLiterals{
+    NULLBULKSTRING,
+    NULLARRAY,
+    OK,
+    EMPTYSTRING,
+    EMPTYARRAY,
+
+}
  
  fn encode() {
 
@@ -144,8 +152,9 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
 
         "set" => { 
                 
-                //let mut iter_clone = op_iter.clone();
                 
+                let elems: Vec<&String> =op_iter.clone().collect();
+                println!("current elems in op_iter{:?}", &elems[..]);
                 let res =set_values(  newkvpair.clone(),&mut op_iter);
                 op_iter.next();
                   if res.is_ok() {
