@@ -3,7 +3,8 @@ use std::iter::Peekable;
  use std::net::{TcpListener,TcpStream};
  use std::slice::Iter;
 use std::sync::{Mutex, Arc};
-use std::{str, u8};
+use std::time::Duration;
+use std::{str, u8, default};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  use std::collections::HashMap;
@@ -26,8 +27,16 @@ fn decode() {
 }
 
 
+#[derive(Clone)]
+struct RedisVal {
+    value: String,
+    timer: Option<std::time::Instant>
+}
 
-fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+
+
+
+fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
     //fn set_values( mut kvmap: &mut HashMap<String, String>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{  
     let values = kv.clone();
     if values.len() < 2 {
@@ -39,43 +48,45 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, String>>>, kv :&mut Peekable<I
         iter.next();
         let  key = iter.next().unwrap();
 
-        let val = iter.next().unwrap().to_string().to_owned();
-
-        kvp1.insert( key.to_owned(), val.to_owned());
+        let val = iter.next().unwrap().to_string();
         
-        let def = "cannot set value".to_owned();
-        let  map_value  = kvp1.get(key).unwrap_or(&def);
-        return Ok(Some(map_value.clone()));
+        let mut insertedVal: RedisVal = RedisVal { value: val , timer: None};
+        let timer_flag = iter.next();
+
+        if timer_flag.is_some() {
+            insertedVal.timer = Some(std::time::Instant::now());
+        }
+
+            kvp1.insert( key.to_owned(), insertedVal);
+        
+        
+        
+        let  map_value  = &kvp1.get(key).unwrap().value;
+        //return Ok(Some(map_value.clone()));
+        return Ok(Some(map_value.to_string()));
     }
     else{
         Err("Could not lock mutex")
-    }
-
-
-    
-
-      
+    }     
 }
 
- fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, String>>>) -> Result<String, &'static str> {
-    //
-        // let err_msg = "invalid key".to_owned();
-        // let value = kvmap.get(&key).unwrap_or(&err_msg); 
 
-        // return Ok(value.to_string());      
+ fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, RedisVal>>>, iter :&mut Peekable<Iter<String>>) -> Result<Option< RedisVal>, &'static str> {
+
+
     
-    
+
     if let Ok( kvp1) = kvmap.lock(){
-        let err_msg = "invalid key".to_owned();
-        let value = kvp1.get(&key).unwrap_or(&err_msg);
+        let value = kvp1.get(&key).unwrap();
 
-    println!("retrieved value is: {}",value);
-    return Ok(value.to_string());
+        let params : Vec<&String> =iter.collect();
+        println!("items in iter: {:?}", params);
+        let default = RedisVal { value: value.value.to_owned(), timer: value.timer };
+    return Ok(Some(default));
     }
     else{
         Err("error in locking mutex")
     }
-
 }
  
 fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
@@ -98,7 +109,7 @@ fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
     }
 
 
-fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String>>>) {
+fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,RedisVal>>>) {
         
         
         let mut buf = [0;512]; 
@@ -175,16 +186,23 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,String
             
             
 
-            let res = get_values(keyval2,newkvpair.clone());
-            if res.is_ok() {
-                println!("retrieved val: {}", res.as_ref().unwrap());
-                let val_stream = res.as_ref().unwrap().as_bytes();
-                let payload = [b"+",val_stream,b"\r\n"].concat();
-                let len =stream.write(&payload[..]);
-                println!("Sent payload of len: {}", len.unwrap());
+            let res = get_values(keyval2,newkvpair.clone(), &mut op_iter);
+                if res.is_ok() && res.unwrap().is_some() {
+
+                //check if 
+
+                
+
+                
+                // check if there is a timer
+
+                //check if 
+
+                //send byte stream
+               
             }
             else{
-                println!("error on getting val: {}",res.unwrap_err());
+                println!("error on getting val: {}","vsdf");
             }
 
         },
@@ -205,7 +223,9 @@ fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     println!("Logs from your program will appear here!");
      let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
-     let mut kvpairs: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
+
+     let mut kvpairs: Arc<Mutex<HashMap<String, RedisVal>>> = Arc::new(Mutex::new(HashMap::new()));
+
      for stream in listener.incoming() {
         match stream {
             
