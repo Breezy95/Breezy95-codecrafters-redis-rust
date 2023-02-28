@@ -81,7 +81,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         let val = iter.next();
         let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endTime: None};  
         let subseq_vals: Vec<&String> =values.clone().collect();
-              
+        assert_eq!(0,subseq_vals.len());    
         
       
         kvp1.insert( key.to_owned(), insertedVal);
