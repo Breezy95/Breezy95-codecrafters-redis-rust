@@ -43,7 +43,7 @@ struct RedisVal {
 
 
 fn timer_flag_match(flag: Option<&String>, dur: Option<&String>) -> Option<Times> {
-    
+
     let flag_unwr = flag?.to_string();
 
     match flag_unwr.as_str() {
@@ -84,11 +84,11 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         let timer_flag = iter.next();
         let duration = iter.next();      
         let timer_info =timer_flag_match(timer_flag, duration);
-        
+        println!("entering");
         if let Some(time_struct) = timer_info {
             insertedVal.timer = Some(time_struct.start);
             insertedVal.endTime = time_struct.end;
-            println!("entering");
+            
             kvp1.insert( key.to_owned(), insertedVal);
         }
         let  map_value  = &kvp1.get(key).unwrap().value;
