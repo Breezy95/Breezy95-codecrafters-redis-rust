@@ -38,7 +38,7 @@ fn decode() {
 struct RedisVal {
     value: String,
     timer: Option<std::time::Instant>,
-    endTime : Option<std::time::Duration>
+    
 }
 
 
@@ -80,10 +80,10 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         println!("key to be inserted: {}", key);
         let val = iter.next();
         println!("value to be inserted: {}", key);
-        let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endTime: None};  
+        let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None};  
         let subseq_vals: Vec<&String> =iter.clone().collect();
         
-        println!("len of values, {}, contents: {:?}",subseq_vals.len(),&subseq_vals[..subseq_vals.len()-1]);    
+        println!("len of values, {}, contents: {:?}",subseq_vals.len(),&subseq_vals[..subseq_vals.len()]);    
       
         kvp1.insert( key.to_owned(), insertedVal);
 
@@ -116,7 +116,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         }
         let value = red_value.unwrap();
 
-        let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone(), endTime: None };
+        let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone() };
     return Ok(Some(ret_value));
     }
     else{
