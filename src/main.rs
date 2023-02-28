@@ -110,7 +110,12 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
 
     if let Ok( kvp1) = kvmap.lock(){
 
-        let value = kvp1.get(&key).unwrap();
+        let red_value = kvp1.get(&key);
+        if red_value.is_none(){
+            println!("no value in hashmap");
+        }
+        let value = red_value.unwrap();
+
         let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone(), endTime: None };
     return Ok(Some(ret_value));
     }
