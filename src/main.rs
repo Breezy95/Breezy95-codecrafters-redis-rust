@@ -12,14 +12,16 @@ use std::{str, u8};
  use std::thread;
  use std::collections::HashMap;
 
-enum RespLiterals{
-    NULLBULKSTRING,
-    NULLARRAY,
-    OK,
-    EMPTYSTRING,
-    EMPTYARRAY,
+// const(
+//     NULLBULKSTRING: = ,
+//     NULLARRAY,
+//     OK,
+//     EMPTYSTRING,
+//     EMPTYARRAY,
 
-}
+// )
+
+
 
 struct Times{
      start: std::time::Instant,
@@ -118,15 +120,18 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         // return Ok(value.to_string());      
 
     if let Ok( kvp1) = kvmap.lock(){
-
         let red_value = kvp1.get(&key);
         if red_value.is_none(){
-            println!("no value in hashmap");
+            return Err("value does not exist");
         }
+
         let value = red_value.unwrap();
+        if  Instant::now().duration_since(value.timer.unwrap()) > value.endtime.unwrap_or(Duration::MAX){
+            return  Ok(None);
+        }  
 
         let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone(), endtime: None };
-    return Ok(Some(ret_value));
+        return Ok(Some(ret_value));
     }
     else{
         Err("error in locking mutex")
@@ -234,15 +239,15 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,RedisV
             let res = get_values(keyval2,newkvpair.clone());
                 if res.is_ok() {
                     let redis_opt = res.unwrap();
-                // check if there is a timer
+                    if redis_opt.is_none(){
+                        
+                        stream.write(b"$-1\r\n");
+                    }
+                    else{
                     let redis_val = redis_opt.unwrap();
-                    let curr_time = Instant::now();
-
-                //check if 
-
-                //send byte stream
-                let payload = [b"+",redis_val.value.as_bytes(),b"\r\n"].concat();
-                stream.write(&payload[..]);
+                    let payload = [b"+",redis_val.value.as_bytes(),b"\r\n"].concat();
+                    stream.write(&payload[..]);
+                    }
                
             }
             else{
