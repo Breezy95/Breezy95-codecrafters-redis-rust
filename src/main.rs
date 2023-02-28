@@ -75,7 +75,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
 
     let mut iter = kv;    
     if let Ok(mut kvp1) = kvmap.lock(){
-        iter.next();
+        //iter.next();
         let  key = iter.next().unwrap();
         println!("key to be inserted: {}", key);
         let val = iter.next();
