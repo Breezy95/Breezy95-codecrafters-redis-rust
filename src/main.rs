@@ -38,30 +38,31 @@ fn decode() {
 struct RedisVal {
     value: String,
     timer: Option<std::time::Instant>,
-    
+    endtime: Option<std::time::Duration>
 }
 
 
-fn timer_flag_match(flag: Option<&String>, dur: Option<&String>) -> Option<Times> {
-
-    let flag_unwr = flag?.to_string();
-
-    match flag_unwr.as_str() {
-        "EX" => {
-            let str_dur = dur?.to_string().parse::<u64>().unwrap();
-            let parsed_dur = Duration::from_secs(str_dur);
-            Some(Times{start: Instant::now() , end: Some(parsed_dur) })
-        },
-
-        "PX" =>{
-            let str_dur = dur?.to_string().parse::<u64>().unwrap();
-            let parsed_dur = Duration::from_millis(str_dur);
-            Some(Times{start: Instant::now() , end: Some(parsed_dur) })
-        },
-        _ => None
-    }
+fn timer_flag_match(flags: Vec<&String>) -> Option<Times> {
     
+    if flags.len() <=1 {
+        return None;
     }
+
+    if let Some(timer_type) = flags.first(){
+        match timer_type.as_str() {
+            "px" => {
+                let sduration =flags[1].to_owned();
+                let parse_dur = sduration.parse::<u64>();
+                
+                return Some(Times{ start: Instant::now(), end: Some(Duration::from_millis(parse_dur.unwrap_or(0)))  });
+            },
+            _ => return None,
+        }        
+    }
+    else{
+        return None;
+    }
+} 
     
 
 
@@ -80,11 +81,19 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         println!("key to be inserted: {}", key);
         let val = iter.next();
         println!("value to be inserted: {}", key);
-        let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None};  
+        let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endtime: None };  
         let subseq_vals: Vec<&String> =iter.clone().collect();
         
-        println!("len of values, {}, contents: {:?}",subseq_vals.len(),&subseq_vals[..subseq_vals.len()]);    
-      
+        //println!("len of values, {}, contents: {:?}",subseq_vals.len(),&subseq_vals[..subseq_vals.len()]); 
+
+        let time_values =timer_flag_match(subseq_vals);
+
+        if time_values.is_some(){
+            let unwr_time =time_values.unwrap();
+            insertedVal.timer = Some(unwr_time.start);
+            insertedVal.endtime = unwr_time.end;
+        }
+
         kvp1.insert( key.to_owned(), insertedVal);
 
 
@@ -116,7 +125,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         }
         let value = red_value.unwrap();
 
-        let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone() };
+        let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone(), endtime: None };
     return Ok(Some(ret_value));
     }
     else{
