@@ -84,13 +84,13 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         let timer_flag = iter.next();
         let duration = iter.next();      
         let timer_info =timer_flag_match(timer_flag, duration);
-        println!("entering");
+        
 
         if timer_info.is_some() {
             let unw_tim = timer_info.unwrap();
-            insertedVal.timer = Some(unw_tim.start);
-            insertedVal.endTime = unw_tim.end;
-            
+            insertedVal.timer = Some(unw_tim.start.clone());
+            insertedVal.endTime = unw_tim.end.clone();
+            println!("struct vals {}, {:?}, {:?}", insertedVal.value, insertedVal.timer.unwrap(), insertedVal.endTime);
             kvp1.insert( key.to_owned(), insertedVal);
         }
         let  map_value  = &kvp1.get(key).unwrap().value;
