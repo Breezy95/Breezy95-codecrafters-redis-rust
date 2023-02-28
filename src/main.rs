@@ -65,7 +65,7 @@ fn timer_flag_match(flag: Option<&String>, dur: Option<&String>) -> Option<Times
     
 
 
-fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
+fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable<Iter<String>>) -> Result<String, &'static str>{
     //fn set_values( mut kvmap: &mut HashMap<String, String>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{  
     let values = kv.clone();
     if values.len() < 2 {
@@ -95,10 +95,13 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
            
         }
         let result =kvp1.insert( key.to_owned(), insertedVal);
-        println!("{:?}", result.unwrap().value);
-        let  map_value  = &kvp1.get(key).unwrap().value;
+        if result.is_none(){
+            println!("No key at this insertion");
+        }
+        let  map_value  = kvp1.get(key);
         //return Ok(Some(map_value.clone()));
-        return Ok(Some(map_value.to_string()));
+        let mv_str = &map_value.unwrap().value;
+        return Ok(mv_str.to_string());
     }
     else{
         Err("Could not lock mutex")
