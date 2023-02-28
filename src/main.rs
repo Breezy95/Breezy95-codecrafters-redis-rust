@@ -81,7 +81,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         let val = iter.next();
         let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endTime: None};  
         
-        //let timer_flag = iter.next();
+        let timer_flag = iter.next();
         //let duration = iter.next();      
         
       
@@ -226,6 +226,8 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,RedisV
                 //check if 
 
                 //send byte stream
+                let payload = [b"+",redis_val.value.as_bytes(),b"\r\n"].concat();
+                stream.write(&payload[..]);
                
             }
             else{
