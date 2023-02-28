@@ -81,15 +81,10 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         let val = iter.next();
         let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endTime: None};  
         
-        let timer_flag = iter.next();
-        let duration = iter.next();      
-        let timer_info =timer_flag_match(timer_flag, duration);
+        //let timer_flag = iter.next();
+        //let duration = iter.next();      
         
-
       
-            
-           
-        
         kvp1.insert( key.to_owned(), insertedVal);
 
         let  map_value  = &kvp1.get(key);
