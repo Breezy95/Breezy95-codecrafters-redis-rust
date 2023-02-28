@@ -1,10 +1,13 @@
 use std::iter::Peekable;
 // Uncomment this block to pass the first stage
+
+use tokio;
+
  use std::net::{TcpListener,TcpStream};
  use std::slice::Iter;
 use std::sync::{Mutex, Arc};
-use std::time::Duration;
-use std::{str, u8, default};
+use std::time::{Duration, Instant};
+use std::{str, u8};
  use std::io::{BufReader,Read,Write, BufRead};
  use std::thread;
  use std::collections::HashMap;
@@ -17,6 +20,11 @@ enum RespLiterals{
     EMPTYARRAY,
 
 }
+
+struct Times{
+     start: std::time::Instant,
+    end: Option<std::time::Duration>,
+}
  
  fn encode() {
 
@@ -27,13 +35,34 @@ fn decode() {
 }
 
 
-#[derive(Clone)]
 struct RedisVal {
     value: String,
-    timer: Option<std::time::Instant>
+    timer: Option<std::time::Instant>,
+    endTime : Option<std::time::Duration>
 }
 
 
+fn timer_flag_match(flag: Option<&String>, dur: Option<&String>) -> Option<Times> {
+    
+    let flag_unwr = flag?.to_string();
+
+    match flag_unwr.as_str() {
+        "EX" => {
+            let str_dur = dur?.to_string().parse::<u64>().unwrap();
+            let parsed_dur = Duration::from_secs(str_dur);
+            Some(Times{start: Instant::now() , end: Some(parsed_dur) })
+        },
+
+        "PX" =>{
+            let str_dur = dur?.to_string().parse::<u64>().unwrap();
+            let parsed_dur = Duration::from_millis(str_dur);
+            Some(Times{start: Instant::now() , end: Some(parsed_dur) })
+        },
+        _ => None
+    }
+    
+    }
+    
 
 
 fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable<Iter<String>>) -> Result<Option<String>, &'static str>{
@@ -42,25 +71,25 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
     if values.len() < 2 {
         return Err("no valid key");
     }
- 
+
+
     let mut iter = kv;    
     if let Ok(mut kvp1) = kvmap.lock(){
         iter.next();
         let  key = iter.next().unwrap();
 
-        let val = iter.next().unwrap().to_string();
+        let val = iter.next();
+        let mut insertedVal: RedisVal = RedisVal { value: val.unwrap().to_owned() , timer: None, endTime: None};  
         
-        let mut insertedVal: RedisVal = RedisVal { value: val , timer: None};
         let timer_flag = iter.next();
-
-        if timer_flag.is_some() {
-            insertedVal.timer = Some(std::time::Instant::now());
-        }
-
+        let duration = iter.next();      
+        let timer_info =timer_flag_match(timer_flag, duration);
+        
+        if let Some(time_struct) = timer_info {
+            insertedVal.timer = Some(time_struct.start);
+            insertedVal.endTime = time_struct.end;
             kvp1.insert( key.to_owned(), insertedVal);
-        
-        
-        
+        }
         let  map_value  = &kvp1.get(key).unwrap().value;
         //return Ok(Some(map_value.clone()));
         return Ok(Some(map_value.to_string()));
@@ -71,18 +100,18 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
 }
 
 
- fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, RedisVal>>>, iter :&mut Peekable<Iter<String>>) -> Result<Option< RedisVal>, &'static str> {
+ fn get_values(key: String, kvmap: Arc<Mutex<HashMap<String, RedisVal>>>) -> Result<Option<RedisVal>, &'static str> {
+    //
+        // let err_msg = "invalid key".to_owned();
+        // let value = kvmap.get(&key).unwrap_or(&err_msg); 
 
-
-    
+        // return Ok(value.to_string());      
 
     if let Ok( kvp1) = kvmap.lock(){
-        let value = kvp1.get(&key).unwrap();
 
-        let params : Vec<&String> =iter.collect();
-        println!("items in iter: {:?}", params);
-        let default = RedisVal { value: value.value.to_owned(), timer: value.timer };
-    return Ok(Some(default));
+        let value = kvp1.get(&key).unwrap();
+        let ret_value = RedisVal { value: value.value.clone(), timer: value.timer.clone(), endTime: None };
+    return Ok(Some(ret_value));
     }
     else{
         Err("error in locking mutex")
@@ -186,15 +215,12 @@ fn conn_handler( stream: &mut TcpStream,kvpairs: Arc<Mutex<HashMap<String,RedisV
             
             
 
-            let res = get_values(keyval2,newkvpair.clone(), &mut op_iter);
-                if res.is_ok() && res.unwrap().is_some() {
-
-                //check if 
-
-                
-
-                
+            let res = get_values(keyval2,newkvpair.clone());
+                if res.is_ok() {
+                    let redis_opt = res.unwrap();
                 // check if there is a timer
+                    let redis_val = redis_opt.unwrap();
+                    let curr_time = Instant::now();
 
                 //check if 
 
