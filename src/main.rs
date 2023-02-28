@@ -100,6 +100,9 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         }
         let  map_value  = kvp1.get(key);
         //return Ok(Some(map_value.clone()));
+        if map_value.is_none(){
+            println!("missing value at key");
+        }
         let mv_str = &map_value.unwrap().value;
         return Ok(mv_str.to_string());
     }
