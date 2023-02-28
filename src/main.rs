@@ -132,8 +132,8 @@ fn tokenizer(bytes_buff: &mut Vec<u8>) -> Vec<String> {
             tokens.push(elem.unwrap().to_owned());
 
         }
-        let Some((nullelem, elements)) =tokens.split_last();
-        let token_vec =elements.to_vec();
+        let removelast = &tokens[..tokens.len()-2];
+        let token_vec =removelast.to_vec();
         println!("token vec contents {:?}", token_vec);
         return token_vec; 
     }
