@@ -126,6 +126,7 @@ fn set_values(  kvmap:  Arc<Mutex<HashMap<String, RedisVal>>>, kv :&mut Peekable
         }
 
         let value = red_value.unwrap();
+        println!("key: {}, redis value: {}", key, value.value);
         if  Instant::now().duration_since(value.timer.unwrap()) > value.endtime.unwrap_or(Duration::MAX){
             return  Ok(None);
         }  
